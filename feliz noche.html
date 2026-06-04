@@ -1,0 +1,344 @@
+```html
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Toca la Luna</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+html{
+    height:-webkit-fill-available;
+}
+
+body{
+    overflow:hidden;
+    min-height:100vh;
+    min-height:-webkit-fill-available;
+    background:linear-gradient(to bottom,#020111,#0b1d3a,#000);
+    font-family:Arial, Helvetica, sans-serif;
+    position:relative;
+}
+
+/* Estrellas con brillo */
+.star{
+    position:absolute;
+    background:white;
+    border-radius:50%;
+    animation:parpadeo 2s infinite alternate;
+    box-shadow:
+        0 0 5px white,
+        0 0 10px white,
+        0 0 20px rgba(255,255,255,.8);
+}
+
+.star::before{
+    content:"";
+    position:absolute;
+    top:50%;
+    left:50%;
+    width:15px;
+    height:15px;
+    border-radius:50%;
+    background:rgba(255,255,255,.15);
+    transform:translate(-50%,-50%);
+    animation:halo 3s infinite ease-in-out;
+}
+
+@keyframes parpadeo{
+    0%{
+        opacity:.3;
+        transform:scale(.8);
+    }
+    100%{
+        opacity:1;
+        transform:scale(1.2);
+    }
+}
+
+@keyframes halo{
+    0%{
+        opacity:.1;
+        transform:translate(-50%,-50%) scale(.5);
+    }
+    50%{
+        opacity:.5;
+        transform:translate(-50%,-50%) scale(1.5);
+    }
+    100%{
+        opacity:.1;
+        transform:translate(-50%,-50%) scale(.5);
+    }
+}
+
+/* Luna */
+.moon-container{
+    position:absolute;
+    top:50%;
+    left:50%;
+    transform:translate(-50%,-50%);
+}
+
+.moon{
+    font-size:120px;
+    cursor:pointer;
+    user-select:none;
+    -webkit-user-select:none;
+    -webkit-touch-callout:none;
+    transition:all .6s ease;
+    filter:drop-shadow(0 0 20px #fff6a5);
+    position:relative;
+    z-index:2;
+}
+
+/* ZZZ */
+.zzz{
+    position:absolute;
+    top:-40px;
+    right:-30px;
+    color:white;
+    font-size:30px;
+    text-shadow:0 0 10px white;
+    animation:flotar 2s infinite ease-in-out;
+}
+
+@keyframes flotar{
+    0%{
+        transform:translateY(0);
+        opacity:.5;
+    }
+    50%{
+        transform:translateY(-10px);
+        opacity:1;
+    }
+    100%{
+        transform:translateY(0);
+        opacity:.5;
+    }
+}
+
+/* Título */
+.title{
+    position:absolute;
+    top:30px;
+    width:100%;
+    text-align:center;
+    color:white;
+    font-size:2rem;
+    letter-spacing:2px;
+    text-shadow:
+        0 0 10px white,
+        0 0 20px white;
+}
+
+/* Mensaje */
+.message{
+    position:absolute;
+    width:100%;
+    text-align:center;
+    bottom:120px;
+    color:white;
+    font-size:2rem;
+    opacity:0;
+    transform:translateY(50px);
+    text-shadow:
+        0 0 10px white,
+        0 0 20px white;
+    padding:0 20px;
+}
+
+.show{
+    animation:mensajeMagico 2s forwards;
+}
+
+@keyframes mensajeMagico{
+    0%{
+        opacity:0;
+        transform:translateY(50px) scale(.8);
+    }
+    60%{
+        opacity:1;
+        transform:translateY(-15px) scale(1.05);
+    }
+    100%{
+        opacity:1;
+        transform:translateY(0) scale(1);
+    }
+}
+
+/* Estrella fugaz */
+.shooting-star{
+    position:absolute;
+    top:80px;
+    left:-250px;
+    width:250px;
+    height:3px;
+    background:linear-gradient(to right, white, transparent);
+    transform:rotate(25deg);
+    animation:shoot 6s linear infinite;
+}
+
+@keyframes shoot{
+    0%{
+        left:-250px;
+        top:50px;
+        opacity:1;
+    }
+    100%{
+        left:120%;
+        top:300px;
+        opacity:0;
+    }
+}
+
+/* Destellos alrededor de la luna */
+.sparkle{
+    position:absolute;
+    color:white;
+    font-size:24px;
+    pointer-events:none;
+    z-index:10;
+    animation:brillo 1.5s forwards;
+}
+
+@keyframes brillo{
+    0%{
+        opacity:1;
+        transform:scale(0);
+    }
+    100%{
+        opacity:0;
+        transform:translateY(-80px) scale(2);
+    }
+}
+
+/* Responsive */
+@media(max-width:768px){
+
+    .moon{
+        font-size:90px;
+    }
+
+    .message{
+        font-size:1.4rem;
+        bottom:100px;
+    }
+
+    .title{
+        font-size:1.5rem;
+    }
+
+    .zzz{
+        font-size:24px;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<div class="title">🌙 Toca la Luna 🌙</div>
+
+<div class="shooting-star"></div>
+
+<div class="moon-container">
+    <div class="moon" id="moon">🌙</div>
+    <div class="zzz">Z Z Z</div>
+</div>
+
+<div class="message" id="message">
+    ✨ Que tengas una linda noche, que descanses muy bien y sueñes bonito Kary ✨
+</div>
+
+<script>
+
+// Crear estrellas brillantes
+function crearEstrellas(){
+
+    document.querySelectorAll(".star").forEach(star => star.remove());
+
+    for(let i=0;i<150;i++){
+
+        const star = document.createElement("div");
+        star.classList.add("star");
+
+        const size = Math.random()*4 + 2;
+
+        star.style.width = size + "px";
+        star.style.height = size + "px";
+
+        star.style.top =
+            Math.random()*window.innerHeight + "px";
+
+        star.style.left =
+            Math.random()*window.innerWidth + "px";
+
+        star.style.animationDuration =
+            (Math.random()*4 + 2) + "s";
+
+        document.body.appendChild(star);
+    }
+}
+
+crearEstrellas();
+
+window.addEventListener("resize", crearEstrellas);
+
+const moon = document.getElementById("moon");
+const message = document.getElementById("message");
+
+function mostrarMensaje(){
+
+    message.classList.remove("show");
+    void message.offsetWidth;
+    message.classList.add("show");
+
+    moon.style.transform = "scale(1.3)";
+    moon.style.filter =
+        "drop-shadow(0 0 20px #fff6a5) drop-shadow(0 0 80px white)";
+
+    setTimeout(()=>{
+        moon.style.transform = "scale(1)";
+    },500);
+
+    const rect = moon.getBoundingClientRect();
+
+    for(let i=0;i<20;i++){
+
+        const sparkle = document.createElement("div");
+
+        sparkle.className = "sparkle";
+        sparkle.innerHTML = "✨";
+
+        sparkle.style.left =
+            (rect.left + rect.width/2 + (Math.random()*200-100)) + "px";
+
+        sparkle.style.top =
+            (rect.top + rect.height/2 + (Math.random()*200-100)) + "px";
+
+        document.body.appendChild(sparkle);
+
+        setTimeout(()=>{
+            sparkle.remove();
+        },1500);
+    }
+}
+
+moon.addEventListener("click", mostrarMensaje);
+
+moon.addEventListener("touchstart", function(e){
+    e.preventDefault();
+    mostrarMensaje();
+},{passive:false});
+
+</script>
+
+</body>
+</html>
+```
